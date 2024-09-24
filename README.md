@@ -32,20 +32,20 @@ Below is an overview of the main components and their responsibilities:
 ## Components
 
 ### 1. **Frontend**
-    - The frontend is responsible for rendering the user interface and handling user interactions. 
-      It includes templates for different pages such as the home page, search results, and error pages. 
-    - One upcoming feature will be the use of Vite and an enhanced frontend experience for users and developers.
+  - The frontend is responsible for rendering the user interface and handling user interactions. 
+    It includes templates for different pages such as the home page, search results, and error pages. 
+  - One upcoming feature will be the use of Vite and an enhanced frontend experience for users and developers.
 
 ### 2. **Backend**
-    - The Litestar backend handles the core logic of the application, including processing user inputs, 
-      performing geocoding, searching for golf courses, and calculating distances. 
-      It exposes various endpoints that the frontend interacts with at `/api`
+  - The Litestar backend handles the core logic of the application, including processing user inputs, 
+    performing geocoding, searching for golf courses, and calculating distances. 
+    It exposes various endpoints that the frontend interacts with at `/api`
 
 ### 3. **Database**
-    - SQLite database stores information about players, golf courses, and other relevant geo data
+  - SQLite database stores information about players, golf courses, and other relevant geo data
 
 ### 4. **Services**
-    - **Geocoding Service:** Converts addresses into latitude and longitude coordinates via `geopy` library.
+  - **Geocoding Service:** Converts addresses into latitude and longitude coordinates via `geopy` library.
   - **Course Search Service:** Finds golf courses based on the calculated center coordinates using `geopy` library.
   - **Distance Calculation Service:** Computes distances between players and golf courses using `geopy` library.
 
