@@ -76,43 +76,6 @@ Below is an overview of the main components and their responsibilities:
    - The frontend renders the search results, displaying the best golf courses and distances.
 
 
-
-# App Startup
-
-The startup process for the Litestar Golf Buddy app involves several key steps to ensure the application is properly 
-initialized and ready to handle requests. Below is an overview of how the app startup works:
-
-## Initialization Steps
-
-1. **Environment Setup:**
-   - The application reads configuration settings from environment variables or configuration files. 
-   - This includes settings for the database, API keys, and other necessary configurations.
-
-2. **Database Connection:**
-   - The app establishes a connection to the database. 
-   - This connection is used to fetch and store data related to players, golf courses, and other entities.
-
-3. **Dependency Injection:**
-   - The app initializes various services and dependencies required for its operation. 
-   - This includes setting up geocoding services, course search services, and any other external APIs or libraries.
-
-4. **Routing:**
-   - The app sets up the routing configuration, mapping URLs to their corresponding request handlers. 
-   - This includes routes for the home page, search functionality, and result display.
-
-5. **Template Rendering:**
-   - The app configures the template engine used to render HTML pages. 
-   - This includes setting up the paths to template files and any custom filters or global variables needed for rendering.
-
-6. **Static Files:**
-   - The app serves static files such as CSS, JavaScript, and images. 
-   - This involves setting up the paths to static file directories and configuring the web server to serve these files.
-
-7. **Application Startup:**
-   - The app starts the web server, making it ready to accept incoming HTTP requests. 
-   - This involves binding to a specified port and starting the event loop to handle asynchronous operations.
-
-
 # How Search Works
 
 The search functionality in the Litestar Golf Buddy app works as follows:
