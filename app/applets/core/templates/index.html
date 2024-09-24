@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Golf Course Finder</title>
+    <style>
+        /* Your existing styles */
+        body { font-family: Arial, sans-serif; background-color: #f2f2f2; margin: 0; padding: 20px; }
+        h1 { color: #333; }
+        form { background-color: #fff; padding: 20px; border-radius: 5px; }
+        input[type="text"], input[type="number"] { width: 100%; padding: 10px; margin: 5px 0; }
+        input[type="submit"], button { padding: 10px 20px; background-color: #4CAF50; color: #fff; border: none; cursor: pointer; margin: 5px 2px;}
+        input[type="submit"]:hover, button:hover { background-color: #45a049; }
+        .player-field { margin-bottom: 10px; }
+    </style>
+    <script>
+        let playerCount = 2; // Start with two players
+
+        function addPlayer() {
+            playerCount++;
+            const container = document.getElementById('player-container');
+            const div = document.createElement('div');
+            div.className = 'player-field';
+            div.id = `player-${playerCount}`;
+            div.innerHTML = `
+                <h3>Player ${playerCount}</h3>
+                <input type="text" name="name${playerCount}" placeholder="Name"><br>
+                <input type="text" name="address${playerCount}" placeholder="Address"><br>
+            `;
+            container.appendChild(div);
+        }
+
+        function removePlayer() {
+            if (playerCount > 2) {
+                const container = document.getElementById('player-container');
+                const div = document.getElementById(`player-${playerCount}`);
+                container.removeChild(div);
+                playerCount--;
+            }
+        }
+
+        function addCachedPlayer(id, name, address) {
+            playerCount++;
+            const container = document.getElementById('player-container');
+            const div = document.createElement('div');
+            div.className = 'player-field';
+            div.id = `player-${playerCount}`;
+            div.innerHTML = `
+                <h3>Player ${playerCount}</h3>
+                <input type="hidden" name="id${playerCount}" value="${id}">
+                <input type="text" name="name${playerCount}" value="${name}" placeholder="Name"><br>
+                <input type="text" name="address${playerCount}" value="${address}" placeholder="Address"><br>
+            `;
+            container.appendChild(div);
+        }
+    </script>
+</head>
+<body>
+    <h1>Enter Player Information</h1>
+    <pre>Fast Greens, Long Strokes</pre>
+    <form action="/process" method="post">
+        <div id="player-container">
+            <div class="player-field" id="player-1">
+                <h3>Player 1</h3>
+                <input type="text" name="name1" placeholder="Name"><br>
+                <input type="text" name="address1" placeholder="Address"><br>
+            </div>
+            <div class="player-field" id="player-2">
+                <h3>Player 2</h3>
+                <input type="text" name="name2" placeholder="Name"><br>
+                <input type="text" name="address2" placeholder="Address"><br>
+            </div>
+        </div>
+        <button type="button" onclick="addPlayer()">Add Player</button>
+        <button type="button" onclick="removePlayer()">Remove Player</button><br><br>
+
+        <h2>Select Known Players</h2>
+        {% for player in players %}
+            <button type="button" onclick="addCachedPlayer('{{ player.id }}', '{{ player.name }}', '{{ player.address }}')">
+                {{ player.name }} - {{ player.address }}
+            </button>
+        {% endfor %}
+
+        <br><br>
+        <input type="submit" value="Find Golf Courses">
+    </form>
+</body>
+</html>
