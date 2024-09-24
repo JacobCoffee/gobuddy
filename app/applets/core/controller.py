@@ -59,10 +59,7 @@ def fetch_or_add_player(player_id: str | None, name: str, address: str) -> Playe
     if player_id:
         with get_db_connection() as conn:
             cursor = conn.cursor()
-            cursor.execute(
-                "SELECT id, name, address, latitude, longitude FROM players WHERE id = ?",
-                (player_id,)
-            )
+            cursor.execute("SELECT id, name, address, latitude, longitude FROM players WHERE id = ?", (player_id,))
             if result := cursor.fetchone():
                 return Player(
                     id=result[0],
