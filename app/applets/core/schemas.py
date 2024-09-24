@@ -1,4 +1,5 @@
 """Structures for the core applets."""
+
 from decimal import Decimal
 from typing import Any
 

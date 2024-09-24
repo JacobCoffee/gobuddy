@@ -91,7 +91,7 @@ def find_golf_courses(center_coord: tuple[float, float], radius: int = 160934) -
                 lat=Decimal(str(lat)),
                 lon=Decimal(str(lon)),
                 city=city,
-                access=element.tags.get("access", "unknown")
+                access=element.tags.get("access", "unknown"),
             )
             courses.append(course)
             add_course(course)
