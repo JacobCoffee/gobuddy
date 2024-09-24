@@ -110,22 +110,3 @@ graph TD
 # Contributing
 
 They are welcome.
-
-# TODO
-
-- Fix `city` unknowns using nearby:city or voting area
-- When clicking to add cached player, replace Player 1, Player 2, etc. with the cached player's name if empty
-- Add a route and button to clear all players
-- Add a route and button to clear courses
-- Find way to get course type (private,public)
-  - (Selenium?)
-- Find a way to get course data (API, Selenium?)
-  - Rating
-  - Handicap
-  - Schedule
-  - Green fees
-  - Phone number
-  - Website
-- Add button to generate directions for each player to course
-- Login system so that we don't publicly expose addresses
-  - Maybe we can just use browser session / cookies to not complicate
