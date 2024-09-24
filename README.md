@@ -27,20 +27,6 @@ To install and set up the Golf Buddy app, follow these steps:
 The Litestar Golf Buddy app is built using a modular architecture that separates concerns into different components. 
 This helps in maintaining the codebase, making it easier to understand, extend, and test.
 
-
-```mermaid
-graph TD
-    A[User Input] --> B{Is Data Cached?}
-    B -->|Yes| C[Fetch Data from Cache]
-    B -->|No| D[Geocode Addresses]
-    D --> E[Calculate Center Coordinates]
-    E --> F[Search for Golf Courses]
-    F --> G[Calculate Distances]
-    G --> H[Store Data in Cache]
-    C --> I[Display Results]
-    H --> I[Display Results]
-```
-
 Below is an overview of the main components and their responsibilities:
 
 ## Components
@@ -100,6 +86,26 @@ The search functionality in the Litestar Golf Buddy app works as follows:
 4. Course Search: The app searches for golf courses around the calculated center coordinates.
 5. Distance Calculation: The app calculates the distances from each player to the found golf courses.
 6. Results Display: The app displays the best golf courses along with the distances and estimated travel times for each player.
+
+<details>
+
+<summary>Diagram</summary>
+
+### Search Breakdown
+
+```mermaid
+graph TD
+    A[User Input] --> B{Is Data Cached?}
+    B -->|Yes| C[Fetch Data from Cache]
+    B -->|No| D[Geocode Addresses]
+    D --> E[Calculate Center Coordinates]
+    E --> F[Search for Golf Courses]
+    F --> G[Calculate Distances]
+    G --> H[Store Data in Cache]
+    C --> I[Display Results]
+    H --> I[Display Results]
+```
+</details>
 
 # Contributing
 
