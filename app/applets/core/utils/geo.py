@@ -1,7 +1,7 @@
 """Golf utilities."""
 
 import pickle
-from itertools import combinations
+from decimal import Decimal
 from typing import Any
 
 import overpy
@@ -11,7 +11,8 @@ from geopy.geocoders import Nominatim
 from structlog import get_logger
 
 from app.applets.core.db import get_db_connection
-from app.applets.core.schemas import Course, Player
+from app.applets.core.schemas import Course
+from app.applets.core.utils.db import add_course
 
 logger = get_logger(__name__)
 geolocator = Nominatim(user_agent="gobuddy", timeout=10)
@@ -50,47 +51,6 @@ def geocode_address(address: str) -> tuple[float, float] | None:
     return None
 
 
-def add_player(name: str, address: str) -> Player:
-    """Add a new player or retrieve existing one."""
-    # Check if player exists
-    with get_db_connection() as conn:
-        cursor = conn.cursor()
-        cursor.execute("SELECT id, name, address, latitude, longitude FROM players WHERE address = ?", (address,))
-        if result := cursor.fetchone():
-            logger.info("Player with address %s already exists", address)
-            return Player(
-                id=result[0],
-                name=result[1],
-                address=result[2],
-                coord=(result[3], result[4]) if result[3] and result[4] else None,
-            )
-
-        coord = geocode_address(address)
-
-        cursor.execute(
-            "INSERT INTO players (name, address, latitude, longitude) VALUES (?, ?, ?, ?)",
-            (name, address, coord[0] if coord else None, coord[1] if coord else None),
-        )
-        player_id = cursor.lastrowid
-        return Player(id=player_id, name=name, address=address, coord=coord)
-
-
-def get_cached_players() -> list[Player]:
-    """Retrieve all cached players from the database."""
-    with get_db_connection() as conn:
-        cursor = conn.cursor()
-        cursor.execute("SELECT id, name, address, latitude, longitude FROM players")
-        return [
-            Player(
-                id=row[0],
-                name=row[1],
-                address=row[2],
-                coord=(row[3], row[4]) if row[3] and row[4] else None,
-            )
-            for row in cursor.fetchall()
-        ]
-
-
 # -- Courses
 
 
@@ -105,12 +65,13 @@ def find_golf_courses(center_coord: tuple[float, float], radius: int = 160934) -
         A list of dictionaries containing information about each golf course.
     """
     cache_key = f"{round(center_coord[0], 5)}, {round(center_coord[1], 5)}, {radius}"
-    # Check the database cache
+
     with get_db_connection() as conn:
         cursor = conn.cursor()
         cursor.execute("SELECT courses FROM golf_courses_cache WHERE cache_key = ?", (cache_key,))
         if result := cursor.fetchone():
             return pickle.loads(result[0])  # noqa: S301
+
     elements = query_overpass_api(center_coord, radius)
     courses = []
 
@@ -127,12 +88,13 @@ def find_golf_courses(center_coord: tuple[float, float], radius: int = 160934) -
             city = get_city_name(lat, lon, element.tags, max_additional_queries, query_count)
             course = Course(
                 name=name,
+                lat=Decimal(str(lat)),
+                lon=Decimal(str(lon)),
                 city=city,
-                lat=lat,
-                lon=lon,
-                access=element.tags.get("access", "unknown"),
+                access=element.tags.get("access", "unknown")
             )
             courses.append(course)
+            add_course(course)
 
     logger.info(
         "found %d golf courses within %d miles of %s",
@@ -456,38 +418,3 @@ def find_best_courses(
         course.total_distance = total_distance
     courses.sort(key=lambda x: x.total_distance)
     return courses
-
-
-# -- Distance
-
-
-def calculate_total_distance(course_coord: tuple[float, float], user_coords: list[tuple[float, float]]) -> float:
-    """Calculate the total distance from a golf course to a list of user coordinates.
-
-    Args:
-        course_coord: A tuple containing the latitude and longitude of the golf course.
-        user_coords: A list of tuples containing the latitude and longitude of each user.
-
-    Returns:
-        The total distance in miles from the golf course to all user coordinates
-    """
-    return sum(geodesic(course_coord, user_coord).miles for user_coord in user_coords)
-
-
-def calculate_player_distances(
-    user_coords: list[tuple[float, float]], names: list[str]
-) -> list[dict[str, str | float]]:
-    """Calculate the distances between all pairs of players.
-
-    Args:
-        user_coords: A list of tuples containing the latitude and longitude of each user.
-        names: A list of names corresponding to each user.
-
-    Returns:
-        A list of dictionaries containing the names of the players and the distance between them.
-    """
-    distances = []
-    for (i, coord1), (j, coord2) in combinations(enumerate(user_coords), 2):
-        distance = geodesic(coord1, coord2).miles
-        distances.append({"players": f"{names[i]} and {names[j]}", "distance": distance})
-    return distances
