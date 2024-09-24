@@ -2,10 +2,16 @@
 
 import sqlite3
 from contextlib import contextmanager
+from pathlib import Path
+from typing import Final
 
 from litestar.config.app import AppConfig
+from litestar.utils.module_loader import module_to_os_path
 
-DATABASE_FILE = "cache.db"
+DEFAULT_MODULE_NAME = "gobuddy"
+BASE_DIR: Final[Path] = module_to_os_path(DEFAULT_MODULE_NAME)
+
+DATABASE_FILE = f"{BASE_DIR}/gobuddy.db"
 
 
 @contextmanager
@@ -18,8 +24,8 @@ def get_db_connection() -> sqlite3.Connection:
     conn = sqlite3.connect(DATABASE_FILE)
     try:
         yield conn
-    finally:
         conn.commit()
+    finally:
         conn.close()
 
 
@@ -68,6 +74,16 @@ def initialize_database(app_config: AppConfig) -> AppConfig:
                         address TEXT NOT NULL UNIQUE,
                         latitude REAL,
                         longitude REAL
+                    )
+                """)
+        cursor.execute("""
+                    CREATE TABLE IF NOT EXISTS courses (
+                        id INTEGER PRIMARY KEY AUTOINCREMENT,
+                        name TEXT NOT NULL,
+                        latitude REAL NOT NULL,
+                        longitude REAL NOT NULL,
+                        city TEXT,
+                        access TEXT
                     )
                 """)
     return app_config
